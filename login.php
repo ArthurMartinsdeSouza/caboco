@@ -7,15 +7,19 @@ $cpf = $_POST['cpf'];
 $senha = $_POST['senha'];
 
 // Consulta SQL insegura
-$sql = "SELECT * FROM aluno WHERE cpf = '$cpf' AND senha = '$senha'";
+$sql = "SELECT * FROM aluno 
+  WHERE cpf = :cpf AND senha = :senha";
+try 
+    $stmt = $conexao->prepare($sql);
 
-try {
-    // Executando a consulta
-    $resultado = $conexao->query($sql);
+    $stmt->bindParam(':cpf', $cpf);
+    $stmt->bindParam(':senha', $senha);
 
-    if ( $linha = $resultado->fetch() ) { // fetch() retorna false se não tiver linhas
-        echo "Login bem-sucedido!";
-    } else {
+    $stmt->execute();
+
+    if ( $linha = $stmt->fetch() ) {
+
+    else {
         echo "CPF ou senha incorretos.";
     }
 } catch (PDOException $e) {
